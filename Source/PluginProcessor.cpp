@@ -7,6 +7,7 @@
 */
 
 #include "PluginProcessor.h"
+#include "PluginEditor.h"
 
 //==============================================================================
 FFTExampleAudioProcessor::FFTExampleAudioProcessor()
@@ -97,10 +98,9 @@ juce::AudioProcessorParameter* FFTExampleAudioProcessor::getBypassParameter() co
 //==============================================================================
 void FFTExampleAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    setLatencySamples(fft[0].getLatencyInSamples());
+    setLatencySamples(fft.getLatencyInSamples());
 
-    fft[0].reset();
-    fft[1].reset();
+    fft.reset();
 }
 
 void FFTExampleAudioProcessor::releaseResources()
@@ -128,18 +128,14 @@ void FFTExampleAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
     bool bypassed = apvts.getRawParameterValue("Bypass")->load();
 
     float* channelL = buffer.getWritePointer(0);
-    float* channelR = buffer.getWritePointer(1);
 
     // Processing on a sample-by-sample basis:
     for (int sample = 0; sample < numSamples; ++sample) {
         float sampleL = channelL[sample];
-        float sampleR = channelR[sample];
 
-        sampleL = fft[0].processSample(sampleL, bypassed);
-        sampleR = fft[1].processSample(sampleR, bypassed);
+        sampleL = fft.processSample(sampleL, bypassed);
 
         channelL[sample] = sampleL;
-        channelR[sample] = sampleR;
     }
 
     /*
@@ -159,7 +155,7 @@ bool FFTExampleAudioProcessor::hasEditor() const
 
 juce::AudioProcessorEditor* FFTExampleAudioProcessor::createEditor()
 {
-    return new juce::GenericAudioProcessorEditor (*this);
+    return new MyAudioProcessorEditor(*this);
 }
 
 //==============================================================================

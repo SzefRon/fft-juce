@@ -1,6 +1,8 @@
 #pragma once
 
-#include <JuceHeader.h>
+#include <juce_dsp/juce_dsp.h>
+#include <juce_audio_processors/juce_audio_processors.h>
+#include <numbers>
 
 /**
   STFT analysis and resynthesis of audio data.
@@ -18,16 +20,23 @@ public:
     float processSample(float sample, bool bypassed);
     void processBlock(float* data, int numSamples, bool bypassed);
 
+    std::deque<float> semitone_buffer;
+    unsigned int buf_max_size = 20;
+    int avg_size = 1;
+
 private:
     void processFrame(bool bypassed);
     void processSpectrum(float* data, int numBins);
 
     // The FFT has 2^order points and fftSize/2 + 1 bins.
-    static constexpr int fftOrder = 10;
+    static constexpr int fftOrder = 13;
     static constexpr int fftSize = 1 << fftOrder;      // 1024 samples
     static constexpr int numBins = fftSize / 2 + 1;    // 513 bins
     static constexpr int overlap = 4;                  // 75% overlap
     static constexpr int hopSize = fftSize / overlap;  // 256 samples
+
+    float avg_roundtable[20];
+    int avg_idx = 0;
 
     // Gain correction for using Hann window with 75% overlap.
     static constexpr float windowCorrection = 2.0f / 3.0f;
