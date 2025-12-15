@@ -12,7 +12,7 @@
 #include "LineGraph.h"
 
 //==============================================================================
-LineGraph::LineGraph(std::deque<float> &semitone_buffer, unsigned int max_size)
+LineGraph::LineGraph(std::deque<float> &semitone_buffer, unsigned int &max_size)
     : max_size(max_size), semitone_buffer(semitone_buffer)
 {
     // In your constructor, you should add any child components, and
@@ -40,6 +40,13 @@ void LineGraph::paint (juce::Graphics& g)
     auto map_val = [](float a, float b, float c, float d, float value) {
         return c + (value - a) * (d - c) / (b - a);
         };
+
+    juce::Path p1;
+    p1.startNewSubPath(0.0f, bounds.getHeight() * 0.5f);
+    p1.lineTo(bounds.getWidth(), bounds.getHeight() * 0.5f);
+
+    g.setColour(juce::Colours::dimgrey);
+    g.strokePath(p1, juce::PathStrokeType(1.0f));
 
     juce::Path p;
     bool first = true;

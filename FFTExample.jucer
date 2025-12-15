@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="f4CCqN" name="FFTExample" projectType="audioplug" useAppConfig="0"
-              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" cppLanguageStandard="20">
-  <MAINGROUP id="xBoJJD" name="FFTExample">
+<JUCERPROJECT id="f4CCqN" name="TuneFreqEstimator" projectType="audioplug"
+              useAppConfig="0" addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1"
+              cppLanguageStandard="20" pluginName="TuneFreqEstimator">
+  <MAINGROUP id="xBoJJD" name="TuneFreqEstimator">
     <GROUP id="{7F5C8523-1748-DF60-3C7A-719AC4164237}" name="Source">
       <GROUP id="{FA2BAABA-024C-30B3-E197-057C874439F6}" name="Components">
         <FILE id="SoOE3o" name="LineGraph.cpp" compile="1" resource="0" file="Source/Components/LineGraph.cpp"/>

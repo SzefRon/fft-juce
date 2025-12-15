@@ -98,9 +98,8 @@ juce::AudioProcessorParameter* FFTExampleAudioProcessor::getBypassParameter() co
 //==============================================================================
 void FFTExampleAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    setLatencySamples(fft.getLatencyInSamples());
-
     fft.reset();
+    fft.sampleRate = sampleRate;
 }
 
 void FFTExampleAudioProcessor::releaseResources()
@@ -134,8 +133,6 @@ void FFTExampleAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
         float sampleL = channelL[sample];
 
         sampleL = fft.processSample(sampleL, bypassed);
-
-        channelL[sample] = sampleL;
     }
 
     /*

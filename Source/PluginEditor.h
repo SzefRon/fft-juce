@@ -33,7 +33,15 @@ private:
     FFTExampleAudioProcessor& audioProcessor;
 
     LineGraph lineGraph;
+
+    juce::Label avg_label;
     juce::Slider avg_slider;
+
+    juce::Label peaks_label;
+    juce::Slider peaks_slider;
+
+    juce::Label order_label;
+    juce::Slider order_slider;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MyAudioProcessorEditor)
 };

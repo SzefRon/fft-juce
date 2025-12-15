@@ -20,6 +20,10 @@ void FFTProcessor::reset()
     // Zero out the circular buffers.
     std::fill(inputFifo.begin(), inputFifo.end(), 0.0f);
     std::fill(outputFifo.begin(), outputFifo.end(), 0.0f);
+
+    inputFifo.resize(fftSize);
+    outputFifo.resize(fftSize);
+    fftData.resize(fftSize * 2);
 }
 
 void FFTProcessor::processBlock(float* data, int numSamples, bool bypassed)
@@ -27,6 +31,18 @@ void FFTProcessor::processBlock(float* data, int numSamples, bool bypassed)
     for (int i = 0; i < numSamples; ++i) {
         data[i] = processSample(data[i], bypassed);
     }
+}
+
+void FFTProcessor::changeOrder(int order)
+{
+    fftOrder = order;
+    fftSize = 1 << fftOrder;
+    numBins = fftSize / 2 + 1;                 
+    hopSize = fftSize / overlap;
+
+    buf_max_size = 32.0f * std::powf(2.0f, (13.0f - fftOrder));
+
+    reset();
 }
 
 float FFTProcessor::processSample(float sample, bool bypassed)
@@ -114,7 +130,9 @@ void FFTProcessor::processSpectrum(float* data, int numBins)
     // but it's easier to deal with this as std::complex values.
     auto* cdata = reinterpret_cast<std::complex<float>*>(data);
 
-    auto *vdata = new Bin[numBins];
+    std::vector<Bin> vdata_v;
+    vdata_v.resize(numBins);
+    auto vdata = vdata_v.data();
     for (int i = 0; i < numBins; i++) {
         auto &bin = vdata[i];
         bin.c = cdata[i];
@@ -127,10 +145,9 @@ void FFTProcessor::processSpectrum(float* data, int numBins)
         return std::abs(a.c) > std::abs(b.c);
     });
 
-    const int no_peaks = 20;
+    const float hz_mult = sampleRate / fftSize;
     
     auto get_freq = [&](int i) {
-        constexpr float hz_mult = 48000.0f / fftSize;
         if (i == 0 || i == numBins - 1) return std::max(i * hz_mult, 1.0f);
 
         auto divisor = (std::abs(cdata[i - 1]) - 2.0f * std::abs(cdata[i]) + std::abs(cdata[i + 1]));
@@ -183,11 +200,7 @@ void FFTProcessor::processSpectrum(float* data, int numBins)
     DBG(estimated_tuning << " : " << avg);
 
     semitone_buffer.push_back(avg);
-    if (semitone_buffer.size() >= buf_max_size) semitone_buffer.pop_front();
-
-    
-
-    delete[] vdata;
+    while (semitone_buffer.size() >= buf_max_size) semitone_buffer.pop_front();
 
     // for (int i = 0; i < numBins; ++i) {
     //     // Usually we want to work with the magnitude and phase rather
