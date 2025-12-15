@@ -16,9 +16,7 @@ MyAudioProcessorEditor::MyAudioProcessorEditor (FFTExampleAudioProcessor& p)
     avg_slider(juce::Slider::IncDecButtons, juce::Slider::TextBoxLeft),
     avg_label("avg values", "avg values"),
     peaks_slider(juce::Slider::IncDecButtons, juce::Slider::TextBoxLeft),
-    peaks_label("num of peaks", "num of peaks"),
-    order_slider(juce::Slider::IncDecButtons, juce::Slider::TextBoxLeft),
-    order_label("fft order", "fft order")
+    peaks_label("num of peaks", "num of peaks")
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
@@ -50,19 +48,6 @@ MyAudioProcessorEditor::MyAudioProcessorEditor (FFTExampleAudioProcessor& p)
 
     peaks_label.setJustificationType(juce::Justification::centred);
     addAndMakeVisible(peaks_label);
-
-
-
-    
-    order_slider.setRange(juce::Range<double>(8.0, 14.0), 1.0);
-    order_slider.onValueChange = [&]() {
-        p.fft.changeOrder(order_slider.getValue());
-        };
-    order_slider.setValue(p.fft.getOrder());
-    addAndMakeVisible(order_slider);
-
-    order_label.setJustificationType(juce::Justification::centred);
-    addAndMakeVisible(order_label);
 }
 
 MyAudioProcessorEditor::~MyAudioProcessorEditor()
@@ -83,21 +68,15 @@ void MyAudioProcessorEditor::resized()
     auto bottomBounds = lineGraphBounds.removeFromBottom(60);
     lineGraph.setBounds(lineGraphBounds);
 
-    auto sliderBounds = bottomBounds.removeFromLeft(windowBounds.getWidth() / 3);
+    auto sliderBounds = bottomBounds.removeFromLeft(windowBounds.getWidth() / 2);
     auto labelBounds = sliderBounds.removeFromLeft(windowBounds.getWidth() / 8);
     avg_slider.setBounds(sliderBounds.reduced(10));
     avg_label.setBounds(labelBounds);
 
-    sliderBounds = bottomBounds.removeFromLeft(windowBounds.getWidth() / 3);
+    sliderBounds = bottomBounds;
     labelBounds = sliderBounds.removeFromLeft(windowBounds.getWidth() / 8);
     peaks_slider.setBounds(sliderBounds.reduced(10));
     peaks_label.setBounds(labelBounds);
-
-    sliderBounds = bottomBounds;
-    labelBounds = sliderBounds.removeFromLeft(windowBounds.getWidth() / 8);
-    order_slider.setBounds(sliderBounds.reduced(10));
-    order_label.setBounds(labelBounds);
-
 }
 
 void MyAudioProcessorEditor::timerCallback()
